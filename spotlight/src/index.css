@@ -1,0 +1,21 @@
+/* Make the app stretch full viewport */
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+/* Optional: global background for whole app */
+body {
+  background-color: #f5f5f5;
+}
+
+/* Remove any centering / width limits */
+.App {
+  margin: 0;
+  padding: 0;
+  max-width: none;
+}
