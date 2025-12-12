@@ -10,17 +10,13 @@ import {
   ListItemIcon,
   ListItemText,
   Avatar,
-  IconButton,
-  Menu,
-  MenuItem,
+  Button,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import EventIcon from "@mui/icons-material/Event";
 import HomeIcon from '@mui/icons-material/Home';
-import LogoutIcon from "@mui/icons-material/Logout";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useAuth } from "../../contexts/Authcontexts";
 
 const drawerWidth = 260;
 
@@ -48,23 +44,12 @@ const getIcon = (iconType: string) => {
   }
 };
 
+
+
 export function AppLayout({ title, children }: AppLayoutProps) {
+  const { signOut, user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleLogout = () => {
-    handleMenuClose();
-    navigate("/login");
-  };
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f8fafc" }}>
@@ -98,6 +83,8 @@ export function AppLayout({ title, children }: AppLayoutProps) {
           >
             Spotlight
           </Typography>
+            {/* Sign out button */}
+           
         </Box>
 
         {/* Navigation */}
@@ -147,29 +134,80 @@ export function AppLayout({ title, children }: AppLayoutProps) {
             borderTop: "1px solid #334155",
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Avatar
-              sx={{
-                width: 40,
-                height: 40,
-                backgroundColor: "#3b82f6",
-                fontSize: "0.9rem",
+          {user ? (
+            // Authenticated: Show user info and sign out
+            <>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+                <Avatar
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    backgroundColor: "#3b82f6",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  {user?.email?.charAt(0).toUpperCase() || "U"}
+                </Avatar>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      fontWeight: 600,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap"
+                    }}
+                  >
+                    {user?.user_metadata?.name || user?.email?.split('@')[0] || "User"}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ 
+                      color: "#94a3b8", 
+                      display: "block",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap"
+                    }}
+                  >
+                    {user?.email || "user@spotlight.com"}
+                  </Typography>
+                </Box>
+              </Box>
+              
+              <Button
+                size="small"
+                variant="outlined"
+                fullWidth
+                onClick={signOut}
+                sx={{ 
+                  borderColor: "#334155", 
+                  color: "#fff",
+                  "&:hover": {
+                    borderColor: "#475569",
+                    backgroundColor: "rgba(51, 65, 85, 0.5)"
+                  }
+                }}
+              >
+                Sign out
+              </Button>
+            </>
+          ) : (
+            // Not authenticated: Show sign in button
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={() => navigate("/login")}
+              sx={{ 
+                bgcolor: "#3b82f6",
+                "&:hover": {
+                  bgcolor: "#2563eb"
+                }
               }}
             >
-              AD
-            </Avatar>
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                Admin
-              </Typography>
-              <Typography
-                variant="caption"
-                sx={{ color: "#94a3b8", display: "block" }}
-              >
-                admin@spotlight.com
-              </Typography>
-            </Box>
-          </Box>
+              Sign In
+            </Button>
+          )}
         </Box>
       </Drawer>
 
@@ -186,7 +224,7 @@ export function AppLayout({ title, children }: AppLayoutProps) {
             boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
           }}
         >
-          <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Toolbar>
             <Typography
               variant="h6"
               sx={{
@@ -196,23 +234,6 @@ export function AppLayout({ title, children }: AppLayoutProps) {
             >
               {title}
             </Typography>
-            <IconButton
-              onClick={handleMenuOpen}
-              size="small"
-              sx={{ color: "#64748b" }}
-            >
-              <MoreVertIcon />
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-            >
-              <MenuItem onClick={handleLogout}>
-                <LogoutIcon sx={{ mr: 1, fontSize: 20 }} />
-                Logout
-              </MenuItem>
-            </Menu>
           </Toolbar>
         </AppBar>
 
