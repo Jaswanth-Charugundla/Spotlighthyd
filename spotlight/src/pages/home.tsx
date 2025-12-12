@@ -10,7 +10,7 @@ import {
   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/Authcontexts";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Home() {
   const navigate = useNavigate();
