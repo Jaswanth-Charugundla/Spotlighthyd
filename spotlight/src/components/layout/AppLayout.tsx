@@ -16,9 +16,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import EventIcon from "@mui/icons-material/Event";
 import HomeIcon from '@mui/icons-material/Home';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { useAuth } from "../../contexts/Authcontexts";
 
-const drawerWidth = 260;
+const drawerWidth = 280;
 
 const navItems = [
    { label: "Home", path: "/", iconType: "home" }, 
@@ -52,7 +53,7 @@ export function AppLayout({ title, children }: AppLayoutProps) {
   const navigate = useNavigate();
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f8fafc" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh", background: "transparent" }}>
       {/* Sidebar */}
       <Drawer
         variant="permanent"
@@ -62,33 +63,41 @@ export function AppLayout({ title, children }: AppLayoutProps) {
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
-            backgroundColor: "#1e293b",
+            background: "rgba(26, 26, 46, 0.7)",
+            backdropFilter: "blur(20px)",
             color: "#ffffff",
-            borderRight: "1px solid #334155",
+            borderRight: "1px solid rgba(139, 92, 246, 0.2)",
+            boxShadow: "4px 0 24px rgba(0, 0, 0, 0.3)",
           },
         }}
       >
         {/* Logo */}
-        <Box sx={{ p: 3, borderBottom: "1px solid #334155" }}>
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 700,
-              fontSize: "1.5rem",
-              background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            Spotlight
-          </Typography>
-            {/* Sign out button */}
-           
+        <Box sx={{ p: 3, borderBottom: "1px solid rgba(139, 92, 246, 0.2)" }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <AutoAwesomeIcon sx={{ 
+              fontSize: 32, 
+              color: '#8b5cf6',
+              filter: 'drop-shadow(0 0 8px rgba(139, 92, 246, 0.6))'
+            }} />
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 800,
+                fontSize: "1.75rem",
+                background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                letterSpacing: '-0.02em'
+              }}
+            >
+              Spotlight
+            </Typography>
+          </Box>
         </Box>
 
         {/* Navigation */}
-        <List sx={{ p: 2 }}>
+        <List sx={{ p: 2.5, flex: 1 }}>
           {navItems.map((item) => (
             <ListItemButton
               key={item.path}
@@ -99,29 +108,63 @@ export function AppLayout({ title, children }: AppLayoutProps) {
               }
               onClick={() => navigate(item.path)}
               sx={{
-                mb: 1,
-                borderRadius: "8px",
+                mb: 1.5,
+                borderRadius: "12px",
+                py: 1.5,
+                transition: "all 0.3s ease",
+                position: "relative",
+                overflow: "hidden",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  inset: 0,
+                  borderRadius: "12px",
+                  padding: "2px",
+                  background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+                  WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                  WebkitMaskComposite: "xor",
+                  maskComposite: "exclude",
+                  opacity: 0,
+                  transition: "opacity 0.3s ease",
+                },
                 "&.Mui-selected": {
-                  backgroundColor: "#334155",
-                  color: "#3b82f6",
+                  background: "linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(236, 72, 153, 0.15) 100%)",
+                  "&::before": {
+                    opacity: 1,
+                  },
                   "& .MuiListItemIcon-root": {
-                    color: "#3b82f6",
+                    color: "#8b5cf6",
+                    filter: "drop-shadow(0 0 8px rgba(139, 92, 246, 0.6))",
+                  },
+                  "& .MuiListItemText-primary": {
+                    color: "#fff",
+                    fontWeight: 600,
                   },
                 },
                 "&:hover": {
-                  backgroundColor: "#334155",
+                  background: "rgba(139, 92, 246, 0.1)",
+                  transform: "translateX(4px)",
                 },
               }}
             >
               <ListItemIcon
                 sx={{
-                  minWidth: 40,
-                  color: "inherit",
+                  minWidth: 44,
+                  color: "#94a3b8",
+                  transition: "all 0.3s ease",
                 }}
               >
                 {getIcon(item.iconType)}
               </ListItemIcon>
-              <ListItemText primary={item.label} />
+              <ListItemText 
+                primary={item.label}
+                sx={{
+                  "& .MuiListItemText-primary": {
+                    fontSize: "0.95rem",
+                    fontWeight: 500,
+                  }
+                }}
+              />
             </ListItemButton>
           ))}
         </List>
@@ -129,21 +172,32 @@ export function AppLayout({ title, children }: AppLayoutProps) {
         {/* User Section */}
         <Box
           sx={{
-            mt: "auto",
-            p: 2,
-            borderTop: "1px solid #334155",
+            p: 2.5,
+            borderTop: "1px solid rgba(139, 92, 246, 0.2)",
+            background: "rgba(139, 92, 246, 0.05)",
           }}
         >
           {user ? (
             // Authenticated: Show user info and sign out
             <>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+              <Box sx={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: 1.5, 
+                mb: 2,
+                p: 1.5,
+                borderRadius: "12px",
+                background: "rgba(139, 92, 246, 0.1)",
+                border: "1px solid rgba(139, 92, 246, 0.2)",
+              }}>
                 <Avatar
                   sx={{
-                    width: 40,
-                    height: 40,
-                    backgroundColor: "#3b82f6",
-                    fontSize: "0.9rem",
+                    width: 44,
+                    height: 44,
+                    background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+                    fontSize: "1rem",
+                    fontWeight: 700,
+                    boxShadow: "0 4px 12px rgba(139, 92, 246, 0.4)",
                   }}
                 >
                   {user?.email?.charAt(0).toUpperCase() || "U"}
@@ -152,10 +206,12 @@ export function AppLayout({ title, children }: AppLayoutProps) {
                   <Typography 
                     variant="body2" 
                     sx={{ 
-                      fontWeight: 600,
+                      fontWeight: 700,
                       overflow: "hidden",
                       textOverflow: "ellipsis",
-                      whiteSpace: "nowrap"
+                      whiteSpace: "nowrap",
+                      color: "#fff",
+                      fontSize: "0.95rem"
                     }}
                   >
                     {user?.user_metadata?.name || user?.email?.split('@')[0] || "User"}
@@ -167,7 +223,8 @@ export function AppLayout({ title, children }: AppLayoutProps) {
                       display: "block",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
-                      whiteSpace: "nowrap"
+                      whiteSpace: "nowrap",
+                      fontSize: "0.75rem"
                     }}
                   >
                     {user?.email || "user@spotlight.com"}
@@ -176,16 +233,19 @@ export function AppLayout({ title, children }: AppLayoutProps) {
               </Box>
               
               <Button
-                size="small"
+                size="medium"
                 variant="outlined"
                 fullWidth
                 onClick={signOut}
                 sx={{ 
-                  borderColor: "#334155", 
+                  borderColor: "rgba(139, 92, 246, 0.3)", 
                   color: "#fff",
+                  borderRadius: "10px",
+                  fontWeight: 600,
                   "&:hover": {
-                    borderColor: "#475569",
-                    backgroundColor: "rgba(51, 65, 85, 0.5)"
+                    borderColor: "#8b5cf6",
+                    backgroundColor: "rgba(139, 92, 246, 0.1)",
+                    transform: "translateY(-2px)",
                   }
                 }}
               >
@@ -199,9 +259,13 @@ export function AppLayout({ title, children }: AppLayoutProps) {
               fullWidth
               onClick={() => navigate("/login")}
               sx={{ 
-                bgcolor: "#3b82f6",
+                background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+                borderRadius: "10px",
+                py: 1.5,
+                fontWeight: 600,
                 "&:hover": {
-                  bgcolor: "#2563eb"
+                  background: "linear-gradient(135deg, #7c3aed 0%, #db2777 100%)",
+                  transform: "translateY(-2px)",
                 }
               }}
             >
@@ -212,24 +276,31 @@ export function AppLayout({ title, children }: AppLayoutProps) {
       </Drawer>
 
       {/* Main Content */}
-      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", background: "transparent" }}>
         {/* Top Bar */}
         <AppBar
           position="fixed"
+          elevation={0}
           sx={{
             ml: `${drawerWidth}px`,
             width: `calc(100% - ${drawerWidth}px)`,
-            backgroundColor: "#ffffff",
-            color: "#1e293b",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            background: "rgba(26, 26, 46, 0.8)",
+            backdropFilter: "blur(20px)",
+            borderBottom: "1px solid rgba(139, 92, 246, 0.2)",
+            boxShadow: "0 4px 24px rgba(0, 0, 0, 0.1)",
           }}
         >
-          <Toolbar>
+          <Toolbar sx={{ py: 1 }}>
             <Typography
-              variant="h6"
+              variant="h5"
               sx={{
-                fontWeight: 600,
-                fontSize: "1.1rem",
+                fontWeight: 700,
+                fontSize: "1.5rem",
+                background: "linear-gradient(135deg, #fff 0%, #94a3b8 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                letterSpacing: '-0.01em'
               }}
             >
               {title}
@@ -241,10 +312,11 @@ export function AppLayout({ title, children }: AppLayoutProps) {
         <Box
           component="main"
           sx={{
-            mt: "64px",
-            p: 3,
+            mt: "80px",
+            p: 4,
             flex: 1,
             overflow: "auto",
+            background: "transparent",
           }}
         >
           {children}
