@@ -6,11 +6,15 @@ import {
   Typography,
   Card,
   CardContent,
+  Avatar,
+  Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/Authcontexts";
 
 export default function Home() {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   return (
     <Box
@@ -21,6 +25,117 @@ export default function Home() {
         color: "#f9fafb",
       }}
     >
+      {/* Top Navigation Bar */}
+      <Box
+        sx={{
+          borderBottom: "1px solid #1f2937",
+          bgcolor: "rgba(11, 11, 15, 0.95)",
+          backdropFilter: "blur(10px)",
+          position: "sticky",
+          top: 0,
+          zIndex: 1000,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              py: 2,
+            }}
+          >
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 700,
+                background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Spotlight
+            </Typography>
+
+            {/* User section or Sign In button */}
+            {user ? (
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                  <Avatar
+                    sx={{
+                      width: 36,
+                      height: 36,
+                      backgroundColor: "#3b82f6",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    {user?.email?.charAt(0).toUpperCase() || "U"}
+                  </Avatar>
+                  <Box>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 600,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxWidth: "150px",
+                      }}
+                    >
+                      {user?.user_metadata?.name ||
+                        user?.email?.split("@")[0] ||
+                        "User"}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "#94a3b8",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxWidth: "150px",
+                        display: "block",
+                      }}
+                    >
+                      {user?.email}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={signOut}
+                  sx={{
+                    borderColor: "grey.700",
+                    color: "grey.100",
+                    "&:hover": {
+                      borderColor: "grey.600",
+                      backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    },
+                  }}
+                >
+                  Sign Out
+                </Button>
+              </Box>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={() => navigate("/login")}
+                sx={{
+                  bgcolor: "#3b82f6",
+                  "&:hover": {
+                    bgcolor: "#2563eb",
+                  },
+                }}
+              >
+                Sign In
+              </Button>
+            )}
+          </Box>
+        </Container>
+      </Box>
+
       <Container maxWidth="lg" sx={{ py: 8 }}>
         {/* HERO SECTION */}
         <Box
@@ -29,17 +144,28 @@ export default function Home() {
             flexDirection: { xs: "column", md: "row" },
             alignItems: "center",
             gap: 6,
+            mb: 8,
           }}
         >
           {/* Left side: text */}
           <Box sx={{ flex: 1 }}>
-            <Typography variant="h3" component="h1" gutterBottom>
+            <Typography
+              variant="h2"
+              component="h1"
+              gutterBottom
+              sx={{
+                fontWeight: 700,
+                background: "linear-gradient(135deg, #f9fafb 0%, #94a3b8 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
               Spotlight Events
             </Typography>
-            <Typography variant="h6" color="grey.300" paragraph>
-              We help artists, venues and brands create unforgettable live
-              experiences with structured planning, line-up management and
-              seamless execution.
+            <Typography variant="h5" color="grey.300" paragraph sx={{ mb: 3 }}>
+              Create unforgettable live experiences with structured planning,
+              line-up management and seamless execution.
             </Typography>
             <Typography variant="body1" color="grey.400" paragraph>
               From intimate acoustic nights to high-energy festival stages,
@@ -47,18 +173,58 @@ export default function Home() {
               performance.
             </Typography>
 
-            <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
-              <Button variant="contained" onClick={() => navigate("/login")}>
-                Login to Dashboard
-              </Button>
+            <Stack direction="row" spacing={2} sx={{ mt: 4 }}>
+              {user ? (
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => navigate("/dashboard")}
+                  sx={{
+                    bgcolor: "#3b82f6",
+                    px: 4,
+                    py: 1.5,
+                    "&:hover": {
+                      bgcolor: "#2563eb",
+                    },
+                  }}
+                >
+                  Go to Dashboard
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => navigate("/login")}
+                  sx={{
+                    bgcolor: "#3b82f6",
+                    px: 4,
+                    py: 1.5,
+                    "&:hover": {
+                      bgcolor: "#2563eb",
+                    },
+                  }}
+                >
+                  Get Started
+                </Button>
+              )}
               <Button
                 variant="outlined"
-                sx={{ borderColor: "grey.500", color: "grey.100" }}
+                size="large"
+                sx={{
+                  borderColor: "grey.500",
+                  color: "grey.100",
+                  px: 4,
+                  py: 1.5,
+                  "&:hover": {
+                    borderColor: "grey.400",
+                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                  },
+                }}
                 onClick={() => navigate("/events")}
               >
                 View Events
               </Button>
-            </Box>
+            </Stack>
           </Box>
 
           {/* Right side: hero visual */}
