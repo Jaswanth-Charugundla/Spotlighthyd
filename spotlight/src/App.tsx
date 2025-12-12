@@ -5,6 +5,8 @@ import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
 import Events from "./pages/events";
 import EventDetails from "./pages/eventDetails";
+import CreateEvent from "./pages/createEvent";
+import EditEvent from "./pages/editEvent";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
@@ -26,6 +28,22 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Events />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/events/new"
+        element={
+          <ProtectedRoute>
+            <CreateEvent />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/events/:id/edit"
+        element={
+          <ProtectedRoute>
+            <EditEvent />
           </ProtectedRoute>
         }
       />

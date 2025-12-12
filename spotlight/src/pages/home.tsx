@@ -11,6 +11,10 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/Authcontexts";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
+import PeopleIcon from "@mui/icons-material/People";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -45,18 +49,35 @@ export default function Home() {
               py: 2,
             }}
           >
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 700,
-                background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
-                backgroundClip: "text",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              Spotlight
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 16px rgba(139, 92, 246, 0.4)',
+                }}
+              >
+                <Typography sx={{ fontSize: '1.5rem', fontWeight: 800 }}>S</Typography>
+              </Box>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 800,
+                  background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  letterSpacing: '-0.02em'
+                }}
+              >
+                Spotlight
+              </Typography>
+            </Box>
 
             {/* User section or Sign In button */}
             {user ? (
@@ -64,10 +85,12 @@ export default function Home() {
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                   <Avatar
                     sx={{
-                      width: 36,
-                      height: 36,
-                      backgroundColor: "#3b82f6",
-                      fontSize: "0.85rem",
+                      width: 40,
+                      height: 40,
+                      background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+                      fontSize: "0.9rem",
+                      fontWeight: 700,
+                      boxShadow: "0 4px 12px rgba(139, 92, 246, 0.4)",
                     }}
                   >
                     {user?.email?.charAt(0).toUpperCase() || "U"}
@@ -107,11 +130,14 @@ export default function Home() {
                   size="small"
                   onClick={signOut}
                   sx={{
-                    borderColor: "grey.700",
-                    color: "grey.100",
+                    borderColor: "rgba(139, 92, 246, 0.5)",
+                    color: "#fff",
+                    borderRadius: "10px",
+                    fontWeight: 600,
                     "&:hover": {
-                      borderColor: "grey.600",
-                      backgroundColor: "rgba(255, 255, 255, 0.05)",
+                      borderColor: "#8b5cf6",
+                      backgroundColor: "rgba(139, 92, 246, 0.1)",
+                      transform: "translateY(-2px)",
                     },
                   }}
                 >
@@ -123,9 +149,14 @@ export default function Home() {
                 variant="contained"
                 onClick={() => navigate("/login")}
                 sx={{
-                  bgcolor: "#3b82f6",
+                  background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+                  borderRadius: "10px",
+                  fontWeight: 600,
+                  px: 3,
                   "&:hover": {
-                    bgcolor: "#2563eb",
+                    background: "linear-gradient(135deg, #7c3aed 0%, #db2777 100%)",
+                    transform: "translateY(-2px)",
+                    boxShadow: "0 8px 24px rgba(139, 92, 246, 0.4)",
                   },
                 }}
               >
@@ -148,47 +179,100 @@ export default function Home() {
           }}
         >
           {/* Left side: text */}
-          <Box sx={{ flex: 1 }}>
+          <Box sx={{ flex: 1, position: 'relative', zIndex: 2 }}>
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 1,
+                px: 2,
+                py: 1,
+                mb: 3,
+                borderRadius: '50px',
+                background: 'rgba(139, 92, 246, 0.1)',
+                border: '1px solid rgba(139, 92, 246, 0.3)',
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: 700,
+                  color: '#8b5cf6',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                }}
+              >
+                ✨ Event Management Platform
+              </Typography>
+            </Box>
             <Typography
-              variant="h2"
+              variant="h1"
               component="h1"
               gutterBottom
               sx={{
-                fontWeight: 700,
-                background: "linear-gradient(135deg, #f9fafb 0%, #94a3b8 100%)",
+                fontWeight: 900,
+                fontSize: { xs: '2.5rem', md: '3.5rem', lg: '4.5rem' },
+                lineHeight: 1.1,
+                mb: 3,
+                background: "linear-gradient(135deg, #fff 0%, #8b5cf6 100%)",
                 backgroundClip: "text",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
+                letterSpacing: '-0.03em'
               }}
             >
               Spotlight Events
             </Typography>
-            <Typography variant="h5" color="grey.300" paragraph sx={{ mb: 3 }}>
+            <Typography 
+              variant="h5" 
+              paragraph 
+              sx={{ 
+                mb: 3,
+                color: '#94a3b8',
+                fontWeight: 500,
+                lineHeight: 1.6
+              }}
+            >
               Create unforgettable live experiences with structured planning,
               line-up management and seamless execution.
             </Typography>
-            <Typography variant="body1" color="grey.400" paragraph>
+            <Typography 
+              variant="body1" 
+              paragraph
+              sx={{
+                color: '#64748b',
+                fontSize: '1.1rem',
+                lineHeight: 1.7,
+                mb: 4
+              }}
+            >
               From intimate acoustic nights to high-energy festival stages,
               Spotlight handles the operations so you can focus on the
               performance.
             </Typography>
 
-            <Stack direction="row" spacing={2} sx={{ mt: 4 }}>
+            <Stack direction="row" spacing={2} sx={{ mt: 4 }} flexWrap="wrap">
               {user ? (
                 <Button
                   variant="contained"
                   size="large"
                   onClick={() => navigate("/dashboard")}
                   sx={{
-                    bgcolor: "#3b82f6",
-                    px: 4,
-                    py: 1.5,
+                    background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+                    px: 5,
+                    py: 2,
+                    fontSize: '1.1rem',
+                    fontWeight: 700,
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 40px rgba(139, 92, 246, 0.3)',
                     "&:hover": {
-                      bgcolor: "#2563eb",
+                      background: "linear-gradient(135deg, #7c3aed 0%, #db2777 100%)",
+                      transform: "translateY(-3px)",
+                      boxShadow: '0 15px 50px rgba(139, 92, 246, 0.4)',
                     },
                   }}
                 >
-                  Go to Dashboard
+                  Go to Dashboard →
                 </Button>
               ) : (
                 <Button
@@ -196,28 +280,40 @@ export default function Home() {
                   size="large"
                   onClick={() => navigate("/login")}
                   sx={{
-                    bgcolor: "#3b82f6",
-                    px: 4,
-                    py: 1.5,
+                    background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+                    px: 5,
+                    py: 2,
+                    fontSize: '1.1rem',
+                    fontWeight: 700,
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 40px rgba(139, 92, 246, 0.3)',
                     "&:hover": {
-                      bgcolor: "#2563eb",
+                      background: "linear-gradient(135deg, #7c3aed 0%, #db2777 100%)",
+                      transform: "translateY(-3px)",
+                      boxShadow: '0 15px 50px rgba(139, 92, 246, 0.4)',
                     },
                   }}
                 >
-                  Get Started
+                  Get Started →
                 </Button>
               )}
               <Button
                 variant="outlined"
                 size="large"
                 sx={{
-                  borderColor: "grey.500",
-                  color: "grey.100",
-                  px: 4,
-                  py: 1.5,
+                  borderColor: "rgba(139, 92, 246, 0.5)",
+                  color: "#fff",
+                  px: 5,
+                  py: 2,
+                  fontSize: '1.1rem',
+                  fontWeight: 700,
+                  borderRadius: '12px',
+                  borderWidth: '2px',
                   "&:hover": {
-                    borderColor: "grey.400",
-                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    borderColor: "#8b5cf6",
+                    backgroundColor: "rgba(139, 92, 246, 0.1)",
+                    transform: "translateY(-3px)",
+                    borderWidth: '2px',
                   },
                 }}
                 onClick={() => navigate("/events")}
@@ -231,60 +327,186 @@ export default function Home() {
           <Box
             sx={{
               flex: 1,
-              height: 260,
-              borderRadius: 3,
-              background:
-                "radial-gradient(circle at 20% 20%, rgba(252,211,77,0.3), transparent 55%), radial-gradient(circle at 80% 70%, rgba(96,165,250,0.35), transparent 55%), #020617",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: 6,
+              position: 'relative',
+              display: { xs: 'none', md: 'block' }
             }}
           >
-            <Typography variant="h5" align="center" sx={{ px: 4 }}>
-              Curated line-ups, tight schedules, and a dashboard built for real
-              gigs.
-            </Typography>
+            <Box
+              sx={{
+                position: 'relative',
+                height: 500,
+                borderRadius: '24px',
+                background:
+                  "linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%)",
+                border: "2px solid rgba(139, 92, 246, 0.2)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: 'hidden',
+                backdropFilter: 'blur(10px)',
+                boxShadow: '0 20px 60px rgba(139, 92, 246, 0.3)',
+                "&::before": {
+                  content: '""',
+                  position: 'absolute',
+                  top: '-50%',
+                  right: '-50%',
+                  width: '200%',
+                  height: '200%',
+                  background: 'radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%)',
+                  animation: 'rotate 20s linear infinite',
+                },
+              }}
+            >
+              <Box sx={{ position: 'relative', zIndex: 1, textAlign: 'center', p: 4 }}>
+                <AutoAwesomeIcon 
+                  sx={{ 
+                    fontSize: 80, 
+                    color: '#8b5cf6',
+                    mb: 3,
+                    filter: 'drop-shadow(0 0 20px rgba(139, 92, 246, 0.6))'
+                  }} 
+                />
+                <Typography 
+                  variant="h4" 
+                  align="center" 
+                  sx={{ 
+                    px: 4,
+                    fontWeight: 700,
+                    background: "linear-gradient(135deg, #fff 0%, #8b5cf6 100%)",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  Curated line-ups, tight schedules, and a dashboard built for real
+                  gigs.
+                </Typography>
+              </Box>
+            </Box>
           </Box>
         </Box>
+        
+        <style>
+          {`
+            @keyframes rotate {
+              from { transform: rotate(0deg); }
+              to { transform: rotate(360deg); }
+            }
+          `}
+        </style>
 
         {/* ABOUT SECTION */}
-        <Box sx={{ mt: 8 }}>
-          <Typography variant="h4" gutterBottom>
-            About Spotlight
-          </Typography>
-          <Typography variant="body1" color="grey.300" paragraph>
-            Spotlight is a boutique entertainment and event management outfit
-            focused on live music, stand-up, and experiential shows. We combine
-            creative programming with tight operational control to make sure
-            every show starts on time and ends on a high.
-          </Typography>
-          <Typography variant="body1" color="grey.400" paragraph>
-            The internal dashboard is designed to manage:
-          </Typography>
+        <Box sx={{ mt: 16 }}>
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <Typography 
+              variant="h3" 
+              gutterBottom 
+              fontWeight={800}
+              sx={{
+                background: "linear-gradient(135deg, #fff 0%, #8b5cf6 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                letterSpacing: '-0.02em'
+              }}
+            >
+              About Spotlight
+            </Typography>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontWeight: 400,
+                maxWidth: 800,
+                mx: 'auto',
+                mb: 2
+              }}
+            >
+              Spotlight is a boutique entertainment and event management outfit
+              focused on live music, stand-up, and experiential shows.
+            </Typography>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                color: 'rgba(255, 255, 255, 0.6)',
+                maxWidth: 600,
+                mx: 'auto'
+              }}
+            >
+              The internal dashboard is designed to manage:
+            </Typography>
+          </Box>
 
           {/* Cards row without Grid */}
           <Box
             sx={{
               display: "flex",
               flexWrap: "wrap",
-              gap: 3,
-              mt: 2,
+              gap: 4,
+              mt: 4,
             }}
           >
             <Card
               sx={{
-                flex: "1 1 260px",
-                bgcolor: "#020617",
+                flex: "1 1 300px",
+                background: "rgba(26, 26, 46, 0.6)",
+                backdropFilter: 'blur(20px)',
                 borderRadius: 3,
-                border: "1px solid #1f2937",
+                border: "1px solid rgba(139, 92, 246, 0.2)",
+                position: 'relative',
+                overflow: 'hidden',
+                transition: 'all 0.3s ease',
+                "&:hover": {
+                  transform: 'translateY(-8px)',
+                  boxShadow: '0 20px 40px rgba(139, 92, 246, 0.3)',
+                  borderColor: 'rgba(139, 92, 246, 0.5)',
+                },
+                "&::before": {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '4px',
+                  background: 'linear-gradient(90deg, #8b5cf6 0%, #ec4899 100%)',
+                }
               }}
             >
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
+              <CardContent sx={{ p: 4 }}>
+                <Box
+                  sx={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 2,
+                    background: "linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%)",
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mb: 3,
+                  }}
+                >
+                  <CalendarMonthIcon sx={{ fontSize: 32, color: '#8b5cf6' }} />
+                </Box>
+                <Typography 
+                  variant="h5" 
+                  gutterBottom
+                  fontWeight={700}
+                  sx={{
+                    background: "linear-gradient(135deg, #fff 0%, #8b5cf6 100%)",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
                   Event Planning
                 </Typography>
-                <Typography variant="body2" color="grey.400">
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    lineHeight: 1.7
+                  }}
+                >
                   Create and track events, venues, dates and show flow in a
                   single place. No more messy spreadsheets.
                 </Typography>
@@ -293,17 +515,65 @@ export default function Home() {
 
             <Card
               sx={{
-                flex: "1 1 260px",
-                bgcolor: "#020617",
+                flex: "1 1 300px",
+                background: "rgba(26, 26, 46, 0.6)",
+                backdropFilter: 'blur(20px)',
                 borderRadius: 3,
-                border: "1px solid #1f2937",
+                border: "1px solid rgba(236, 72, 153, 0.2)",
+                position: 'relative',
+                overflow: 'hidden',
+                transition: 'all 0.3s ease',
+                "&:hover": {
+                  transform: 'translateY(-8px)',
+                  boxShadow: '0 20px 40px rgba(236, 72, 153, 0.3)',
+                  borderColor: 'rgba(236, 72, 153, 0.5)',
+                },
+                "&::before": {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '4px',
+                  background: 'linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%)',
+                }
               }}
             >
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
+              <CardContent sx={{ p: 4 }}>
+                <Box
+                  sx={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 2,
+                    background: "linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)",
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mb: 3,
+                  }}
+                >
+                  <MusicNoteIcon sx={{ fontSize: 32, color: '#ec4899' }} />
+                </Box>
+                <Typography 
+                  variant="h5" 
+                  gutterBottom
+                  fontWeight={700}
+                  sx={{
+                    background: "linear-gradient(135deg, #fff 0%, #ec4899 100%)",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
                   Artist & Line-up
                 </Typography>
-                <Typography variant="body2" color="grey.400">
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    lineHeight: 1.7
+                  }}
+                >
                   Manage artists, performance order and set durations so the
                   stage runs smooth from opening act to encore.
                 </Typography>
@@ -312,17 +582,65 @@ export default function Home() {
 
             <Card
               sx={{
-                flex: "1 1 260px",
-                bgcolor: "#020617",
+                flex: "1 1 300px",
+                background: "rgba(26, 26, 46, 0.6)",
+                backdropFilter: 'blur(20px)',
                 borderRadius: 3,
-                border: "1px solid #1f2937",
+                border: "1px solid rgba(59, 130, 246, 0.2)",
+                position: 'relative',
+                overflow: 'hidden',
+                transition: 'all 0.3s ease',
+                "&:hover": {
+                  transform: 'translateY(-8px)',
+                  boxShadow: '0 20px 40px rgba(59, 130, 246, 0.3)',
+                  borderColor: 'rgba(59, 130, 246, 0.5)',
+                },
+                "&::before": {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '4px',
+                  background: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%)',
+                }
               }}
             >
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
+              <CardContent sx={{ p: 4 }}>
+                <Box
+                  sx={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 2,
+                    background: "linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)",
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mb: 3,
+                  }}
+                >
+                  <PeopleIcon sx={{ fontSize: 32, color: '#3b82f6' }} />
+                </Box>
+                <Typography 
+                  variant="h5" 
+                  gutterBottom
+                  fontWeight={700}
+                  sx={{
+                    background: "linear-gradient(135deg, #fff 0%, #3b82f6 100%)",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
                   Attendees & Insights
                 </Typography>
-                <Typography variant="body2" color="grey.400">
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    lineHeight: 1.7
+                  }}
+                >
                   Track attendees and basic metrics to understand which events
                   and formats perform best for your audience.
                 </Typography>
