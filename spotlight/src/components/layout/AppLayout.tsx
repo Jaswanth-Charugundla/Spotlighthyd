@@ -16,7 +16,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import EventIcon from "@mui/icons-material/Event";
 import HomeIcon from '@mui/icons-material/Home';
-import { useAuth } from "../../contexts/Authcontexts";
+import { useAuth } from "../../contexts/AuthContext";
 
 const drawerWidth = 260;
 
