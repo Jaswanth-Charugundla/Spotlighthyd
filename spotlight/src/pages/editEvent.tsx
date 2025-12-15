@@ -1,5 +1,8 @@
 // src/pages/editEvent.tsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getEventById, updateEvent } from "../api/events";
 import { AppLayout } from "../components/layout/AppLayout";
 import {
   Card,
@@ -11,19 +14,17 @@ import {
   MenuItem,
   Box,
   Alert,
+  CircularProgress,
 } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
-import { mockEvents } from "../data/mockEvents";
 import SaveIcon from "@mui/icons-material/Save";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function EditEvent() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [eventNotFound, setEventNotFound] = useState(false);
-
+  const eventId = Number(id);
+  const queryClient = useQueryClient();
+  
   const [formData, setFormData] = useState({
     name: "",
     date: "",
@@ -32,114 +33,87 @@ export default function EditEvent() {
     status: "Upcoming",
     description: "",
   });
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Fetch event from database
+  const { 
+    data: event, 
+    isLoading, 
+    error: fetchError 
+  } = useQuery({
+    queryKey: ["event", eventId],
+    queryFn: () => getEventById(eventId),
+    enabled: !!eventId && !isNaN(eventId),
+  });
+
+  // Populate form when event data is loaded
   useEffect(() => {
-    // Load event data
-    const event = mockEvents.find((e) => e.id === Number(id));
     if (event) {
       setFormData({
-        name: event.name,
-        date: event.date,
-        time: event.time,
-        venue: event.venue,
-        status: event.status,
-        description: event.description,
+        name: event.name || "",
+        date: event.date || "",
+        time: event.time || "",
+        venue: event.venue || "",
+        status: event.status || "Upcoming",
+        description: event.description || "",
       });
-    } else {
-      setEventNotFound(true);
     }
-  }, [id]);
+  }, [event]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: value,
+      [e.target.name]: e.target.value,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setIsSubmitting(true);
 
-    // Validation
-    if (!formData.name.trim()) {
-      setError("Event name is required");
-      return;
-    }
-    if (!formData.date) {
-      setError("Event date is required");
-      return;
-    }
-    if (!formData.time) {
-      setError("Event time is required");
-      return;
-    }
-    if (!formData.venue.trim()) {
-      setError("Venue is required");
-      return;
-    }
-    if (!formData.description.trim()) {
-      setError("Description is required");
-      return;
-    }
-
-    // Update the event
-    const eventIndex = mockEvents.findIndex((e) => e.id === Number(id));
-    if (eventIndex !== -1) {
-      mockEvents[eventIndex] = {
-        ...mockEvents[eventIndex],
+    try {
+      await updateEvent(eventId, {
         name: formData.name.trim(),
         date: formData.date,
         time: formData.time,
         venue: formData.venue.trim(),
         status: formData.status,
         description: formData.description.trim(),
-      };
+      });
 
-      // Show success message
-      setSuccess(true);
+      // Refresh cached data
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
 
-      // Redirect to event details page after a short delay
-      setTimeout(() => {
-        navigate(`/events/${id}`);
-      }, 1500);
-    } else {
-      setError("Event not found");
+      // Navigate back to event details
+      navigate(`/events/${eventId}`);
+    } catch (err: any) {
+      setError(err.message || "Failed to update event");
+      setIsSubmitting(false);
     }
   };
 
-  if (eventNotFound) {
+  if (isLoading) {
     return (
       <AppLayout title="Edit Event">
-        <Card
-          sx={{
-            background: "rgba(26, 26, 46, 0.6)",
-            backdropFilter: "blur(20px)",
-            border: "1px solid rgba(239, 68, 68, 0.3)",
-            borderRadius: 3,
-          }}
-        >
-          <CardContent sx={{ p: 4, textAlign: "center" }}>
-            <Typography variant="h5" color="error" mb={2}>
-              Event Not Found
-            </Typography>
-            <Typography variant="body1" color="textSecondary" mb={3}>
-              The event you're trying to edit doesn't exist.
-            </Typography>
-            <Button
-              variant="contained"
-              onClick={() => navigate("/events")}
-              sx={{
-                background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
-                textTransform: "none",
-                fontWeight: 600,
-              }}
-            >
-              Back to Events
-            </Button>
-          </CardContent>
-        </Card>
+        <Box sx={{ textAlign: "center", py: 8 }}>
+          <CircularProgress size={48} sx={{ color: "#8b5cf6" }} />
+          <Typography sx={{ mt: 2, color: "rgba(255, 255, 255, 0.7)" }}>
+            Loading event...
+          </Typography>
+        </Box>
+      </AppLayout>
+    );
+  }
+
+  if (fetchError || !event) {
+    return (
+      <AppLayout title="Edit Event">
+        <Alert severity="error">
+          Event not found. <Button onClick={() => navigate("/events")}>Back to Events</Button>
+        </Alert>
       </AppLayout>
     );
   }
@@ -189,7 +163,7 @@ export default function EditEvent() {
             <Button
               variant="outlined"
               startIcon={<ArrowBackIcon />}
-              onClick={() => navigate(`/events/${id}`)}
+              onClick={() => navigate(`/events/${eventId}`)}
               sx={{
                 borderColor: "rgba(139, 92, 246, 0.5)",
                 color: "#8b5cf6",
@@ -207,22 +181,7 @@ export default function EditEvent() {
             </Button>
           </Stack>
 
-          {/* Success Alert */}
-          {success && (
-            <Alert
-              severity="success"
-              sx={{
-                mb: 3,
-                background: "rgba(34, 197, 94, 0.1)",
-                border: "1px solid rgba(34, 197, 94, 0.3)",
-                "& .MuiAlert-icon": {
-                  color: "#22c55e",
-                },
-              }}
-            >
-              Event updated successfully! Redirecting to event details...
-            </Alert>
-          )}
+
 
           {/* Error Alert */}
           {error && (
@@ -437,7 +396,7 @@ export default function EditEvent() {
                 <Button
                   type="button"
                   variant="outlined"
-                  onClick={() => navigate(`/events/${id}`)}
+                  onClick={() => navigate(`/events/${eventId}`)}
                   sx={{
                     px: 4,
                     py: 1.5,
@@ -458,7 +417,7 @@ export default function EditEvent() {
                   type="submit"
                   variant="contained"
                   startIcon={<SaveIcon />}
-                  disabled={success}
+                  disabled={isSubmitting}
                   sx={{
                     px: 4,
                     py: 1.5,
@@ -483,7 +442,7 @@ export default function EditEvent() {
                     },
                   }}
                 >
-                  Update Event
+                  {isSubmitting ? "Updating..." : "Update Event"}
                 </Button>
               </Stack>
             </Stack>

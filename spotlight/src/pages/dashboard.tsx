@@ -12,11 +12,14 @@ import {
   TableBody,
   Chip,
   Button,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
-import { mockEvents } from "../data/mockEvents";
 import { getTotalRevenue } from "../data/mockRevenue";
 import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getEvents } from "../api/events";
 import EventIcon from "@mui/icons-material/Event";
 import UpcomingIcon from "@mui/icons-material/Upcoming";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -40,16 +43,32 @@ const getStatusColor = (status: string) => {
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  // Calculate real statistics from mockEvents
+  // Fetch events from database
+  const { data: events, isLoading, error } = useQuery({
+    queryKey: ["events"],
+    queryFn: getEvents,
+  });
+
+  // Calculate real statistics from database events
   const stats = useMemo(() => {
-    const totalEvents = mockEvents.length;
-    const upcomingEvents = mockEvents.filter(
+    if (!events) {
+      return [
+        { label: "Total Events", value: "0", icon: <EventIcon sx={{ fontSize: 40 }} />, color: "#8b5cf6", gradient: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)" },
+        { label: "Upcoming Events", value: "0", icon: <UpcomingIcon sx={{ fontSize: 40 }} />, color: "#3b82f6", gradient: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)" },
+        { label: "Completed Events", value: "0", icon: <CheckCircleIcon sx={{ fontSize: 40 }} />, color: "#10b981", gradient: "linear-gradient(135deg, #10b981 0%, #059669 100%)" },
+        { label: "Cancelled Events", value: "0", icon: <CancelIcon sx={{ fontSize: 40 }} />, color: "#ef4444", gradient: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)" },
+        { label: "Total Revenue", value: "₹ 0", icon: <AttachMoneyIcon sx={{ fontSize: 40 }} />, color: "#ec4899", gradient: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)" },
+      ];
+    }
+
+    const totalEvents = events.length;
+    const upcomingEvents = events.filter(
       (e) => e.status === "Upcoming"
     ).length;
-    const completedEvents = mockEvents.filter(
+    const completedEvents = events.filter(
       (e) => e.status === "Completed"
     ).length;
-    const cancelledEvents = mockEvents.filter(
+    const cancelledEvents = events.filter(
       (e) => e.status === "Cancelled"
     ).length;
     const totalRevenue = getTotalRevenue();
@@ -91,15 +110,47 @@ export default function Dashboard() {
         gradient: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)"
       },
     ];
-  }, []);
+  }, [events]);
 
   // Get upcoming events sorted by date
   const upcomingEvents = useMemo(() => {
-    return mockEvents
+    if (!events) return [];
+    return events
       .filter((e) => e.status === "Upcoming")
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .slice(0, 5); // Show only next 5 upcoming events
-  }, []);
+  }, [events]);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <AppLayout title="Dashboard">
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <CircularProgress size={48} sx={{ color: '#8b5cf6' }} />
+          <Typography sx={{ mt: 2, color: 'rgba(255, 255, 255, 0.7)' }}>
+            Loading dashboard...
+          </Typography>
+        </Box>
+      </AppLayout>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <AppLayout title="Dashboard">
+        <Alert 
+          severity="error"
+          sx={{
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+          }}
+        >
+          Error loading dashboard data: {error.message}
+        </Alert>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout title="Dashboard">

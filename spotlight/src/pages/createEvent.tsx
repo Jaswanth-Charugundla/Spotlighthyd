@@ -13,14 +13,17 @@ import {
   Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { addEvent } from "../data/mockEvents";
+import { useQueryClient } from "@tanstack/react-query";
+import { createEvent } from "../api/events";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function CreateEvent() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -39,51 +42,65 @@ export default function CreateEvent() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    setIsSubmitting(true);
 
     // Validation
     if (!formData.name.trim()) {
       setError("Event name is required");
+      setIsSubmitting(false);
       return;
     }
     if (!formData.date) {
       setError("Event date is required");
+      setIsSubmitting(false);
       return;
     }
     if (!formData.time) {
       setError("Event time is required");
+      setIsSubmitting(false);
       return;
     }
     if (!formData.venue.trim()) {
       setError("Venue is required");
+      setIsSubmitting(false);
       return;
     }
     if (!formData.description.trim()) {
       setError("Description is required");
+      setIsSubmitting(false);
       return;
     }
 
-    // Add the event
-    const newEvent = {
-      name: formData.name.trim(),
-      date: formData.date,
-      time: formData.time,
-      venue: formData.venue.trim(),
-      status: formData.status,
-      description: formData.description.trim(),
-    };
+    try {
+      // Create event in database
+      const newEvent = {
+        name: formData.name.trim(),
+        date: formData.date,
+        time: formData.time,
+        venue: formData.venue.trim(),
+        status: formData.status,
+        description: formData.description.trim(),
+      };
 
-    addEvent(newEvent);
+      await createEvent(newEvent);
 
-    // Show success message
-    setSuccess(true);
+      // Invalidate events query to refresh the list
+      queryClient.invalidateQueries({ queryKey: ["events"] });
 
-    // Redirect to events page after a short delay
-    setTimeout(() => {
-      navigate("/events");
-    }, 1500);
+      // Show success message
+      setSuccess(true);
+
+      // Redirect to events page after a short delay
+      setTimeout(() => {
+        navigate("/events");
+      }, 1500);
+    } catch (err: any) {
+      setError(err.message || "Failed to create event. Please try again.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -400,7 +417,7 @@ export default function CreateEvent() {
                   type="submit"
                   variant="contained"
                   startIcon={<AddIcon />}
-                  disabled={success}
+                  disabled={success || isSubmitting}
                   sx={{
                     px: 4,
                     py: 1.5,
@@ -425,7 +442,7 @@ export default function CreateEvent() {
                     },
                   }}
                 >
-                  Create Event
+                  {isSubmitting ? "Creating..." : "Create Event"}
                 </Button>
               </Stack>
             </Stack>

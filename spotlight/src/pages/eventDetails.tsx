@@ -1,9 +1,10 @@
 // src/pages/eventDetails.tsx
 import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getEventById } from "../api/events";
 import { AppLayout } from "../components/layout/AppLayout";
-import { Card, CardContent, Typography, Stack, Divider, Box, Chip, Button } from "@mui/material";
+import { Card, CardContent, Typography, Stack, Box, Chip, Button, CircularProgress, Alert, Divider } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import { mockEvents } from "../data/mockEvents";
 import { getEventRevenue } from "../data/mockRevenue";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -26,9 +27,98 @@ const getStatusColor = (status: string) => {
 export default function EventDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const event = mockEvents.find((e) => e.id === Number(id));
-  const revenue = event ? getEventRevenue(event.id) : null;
+  
+  // Fetch event from database
+  const { data: event, isLoading, error } = useQuery({
+    queryKey: ["event", id],
+    queryFn: () => getEventById(Number(id)),
+  });
 
+  const revenue = event ? getEventRevenue(event.id) : null;
+  const totalRevenue = revenue 
+    ? (revenue.ticketSales + revenue.sponsorship + revenue.merchandise + revenue.other)
+    : 0;
+
+  // Loading State
+  if (isLoading) {
+    return (
+      <AppLayout title="Event Details">
+        <Box
+          sx={{
+            background: "rgba(26, 26, 46, 0.6)",
+            backdropFilter: 'blur(20px)',
+            border: "1px solid rgba(139, 92, 246, 0.2)",
+            borderRadius: 3,
+            p: 8,
+            textAlign: 'center',
+          }}
+        >
+          <Stack spacing={3} alignItems="center">
+            <CircularProgress 
+              size={48} 
+              sx={{ color: '#8b5cf6' }}
+            />
+            <Typography 
+              variant="h5" 
+              sx={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontWeight: 600,
+              }}
+            >
+              Loading event details...
+            </Typography>
+          </Stack>
+        </Box>
+      </AppLayout>
+    );
+  }
+
+  // Error State
+  if (error) {
+    return (
+      <AppLayout title="Event Details">
+        <Box
+          sx={{
+            background: "rgba(26, 26, 46, 0.6)",
+            backdropFilter: 'blur(20px)',
+            border: "1px solid rgba(239, 68, 68, 0.3)",
+            borderRadius: 3,
+            p: 6,
+            textAlign: 'center',
+          }}
+        >
+          <Alert 
+            severity="error"
+            sx={{
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              '& .MuiAlert-icon': {
+                color: '#ef4444',
+              },
+              mb: 3,
+            }}
+          >
+            Error loading event: {error.message}
+          </Alert>
+          <Button
+            variant="contained"
+            onClick={() => navigate('/events')}
+            sx={{
+              background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+              px: 4,
+              py: 1.5,
+              textTransform: 'none',
+              fontWeight: 600,
+            }}
+          >
+            Back to Events
+          </Button>
+        </Box>
+      </AppLayout>
+    );
+  }
+
+  // Event Not Found State
   if (!event) {
     return (
       <AppLayout title="Event Not Found">
@@ -50,21 +140,31 @@ export default function EventDetails() {
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               fontWeight: 700,
+              mb: 2,
             }}
           >
             Event Not Found
           </Typography>
-          <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.6)', mt: 2 }}>
+          <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.6)', mb: 4 }}>
             The event you're looking for does not exist.
           </Typography>
+          <Button
+            variant="contained"
+            onClick={() => navigate('/events')}
+            sx={{
+              background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+              px: 4,
+              py: 1.5,
+              textTransform: 'none',
+              fontWeight: 600,
+            }}
+          >
+            Back to Events
+          </Button>
         </Box>
       </AppLayout>
     );
   }
-
-  const totalRevenue = revenue 
-    ? (revenue.ticketSales + revenue.sponsorship + revenue.merchandise + revenue.other)
-    : 0;
 
   return (
     <AppLayout title="Event Details">

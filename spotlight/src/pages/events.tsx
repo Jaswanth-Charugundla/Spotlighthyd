@@ -16,10 +16,13 @@ import {
   Badge,
   Box,
   InputAdornment,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { mockEvents } from "../data/mockEvents";
 import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getEvents } from "../api/events";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
@@ -55,10 +58,17 @@ export default function Events() {
     dateTo: "",
   });
 
+  // Fetch events from database
+  const { data: events, isLoading, error } = useQuery({
+    queryKey: ["events"],
+    queryFn: getEvents,
+  });
+
   // Get unique venues for filter dropdown
   const uniqueVenues = useMemo(() => {
-    return Array.from(new Set(mockEvents.map((e) => e.venue))).sort();
-  }, []);
+    if (!events) return [];
+    return Array.from(new Set(events.map((e) => e.venue))).sort();
+  }, [events]);
 
   // Count active filters
   const activeFilterCount = useMemo(() => {
@@ -72,7 +82,8 @@ export default function Events() {
 
   // Filter and search events
   const filteredEvents = useMemo(() => {
-    return mockEvents.filter((event) => {
+    if (!events) return [];
+    return events.filter((event) => {
       // Search filter
       const matchesSearch =
         event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -103,7 +114,7 @@ export default function Events() {
         matchesDateTo
       );
     });
-  }, [searchQuery, filters]);
+  }, [events, searchQuery, filters]);
 
   return (
     <AppLayout title="Events">
@@ -252,7 +263,59 @@ export default function Events() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredEvents.map((e) => (
+                {/* Loading State */}
+                {isLoading && (
+                  <TableRow>
+                    <TableCell 
+                      colSpan={5} 
+                      align="center"
+                      sx={{ 
+                        py: 8,
+                        borderBottom: 'none',
+                      }}
+                    >
+                      <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+                        <CircularProgress 
+                          size={24} 
+                          sx={{ color: '#8b5cf6' }}
+                        />
+                        <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                          Loading events...
+                        </Typography>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                )}
+
+                {/* Error State */}
+                {error && (
+                  <TableRow>
+                    <TableCell 
+                      colSpan={5} 
+                      align="center"
+                      sx={{ 
+                        py: 4,
+                        borderBottom: 'none',
+                      }}
+                    >
+                      <Alert 
+                        severity="error"
+                        sx={{
+                          background: 'rgba(239, 68, 68, 0.1)',
+                          border: '1px solid rgba(239, 68, 68, 0.3)',
+                          '& .MuiAlert-icon': {
+                            color: '#ef4444',
+                          },
+                        }}
+                      >
+                        Error loading events: {error.message}
+                      </Alert>
+                    </TableCell>
+                  </TableRow>
+                )}
+
+                {/* Data State */}
+                {!isLoading && !error && filteredEvents.map((e) => (
                   <TableRow 
                     key={e.id}
                     sx={{
@@ -300,7 +363,8 @@ export default function Events() {
                   </TableRow>
                 ))}
 
-                {filteredEvents.length === 0 && (
+                {/* Empty State */}
+                {!isLoading && !error && filteredEvents.length === 0 && (
                   <TableRow>
                     <TableCell 
                       colSpan={5} 
@@ -309,6 +373,7 @@ export default function Events() {
                         py: 8,
                         color: 'rgba(255, 255, 255, 0.5)',
                         fontSize: '1.1rem',
+                        borderBottom: 'none',
                       }}
                     >
                       No events found
